@@ -147,3 +147,63 @@ def test_12_unhealthy_check_still_tool_success():
     assert res["success"] is True
     assert res["result"]["health_status"] == "unhealthy"
     assert res["result"]["http_status"] == 503
+
+
+# TEST 13 (G1): deploy payload carries the new version and heals
+def test_13_deploy_payload_and_version():
+    executor = Executor(MockService())
+    res = executor.execute(make_request("deploy", parameters={"version": "2.0.0"}))
+    assert res["success"] is True
+    assert res["action"] == "deploy"
+    assert res["result"]["version"] == "2.0.0"
+    assert res["result"]["health_status"] == "healthy"
+    assert executor.service.version == "2.0.0"
+
+
+# TEST 14 (G2): executor-level failed recovery (Member 1 retry path)
+def test_14_executor_failed_recovery():
+    executor = Executor(MockService())
+    executor.execute(make_request("inject_failure"))
+    executor.service.set_fail_recovery_mode(True)
+    res = executor.execute(
+        {"task_id": "task-001", "step_id": "step-002",
+         "action": "restart", "parameters": {}}
+    )
+    assert res["success"] is True
+    assert res["result"]["recovered"] is False
+    assert res["result"]["health_status"] == "unhealthy"
+    assert executor.service.get_status() == "unhealthy"
+
+
+# TEST 15 (G3): attempt passthrough, default stays 1
+def test_15_attempt_passthrough():
+    executor = Executor(MockService())
+    res = executor.execute(
+        {"task_id": "task-001", "step_id": "step-003",
+         "action": "health_check", "attempt": 3, "parameters": {}}
+    )
+    assert res["success"] is True
+    assert res["attempt"] == 3
+    # Missing/invalid attempt still defaults to 1.
+    assert executor.execute(make_request("health_check"))["attempt"] == 1
+    res_bad = executor.execute(
+        {"task_id": "t", "step_id": "s", "action": "health_check",
+         "attempt": "three", "parameters": {}}
+    )
+    assert res_bad["attempt"] == 1
+
+
+# TEST 16 (I1): invalid deploy version is rejected without state change
+def test_16_invalid_deploy_version_rejected():
+    executor = Executor(MockService())
+    executor.execute(make_request("inject_failure"))
+    for bad_version in (123, [], {}, True, ""):
+        res = executor.execute(
+            make_request("deploy", parameters={"version": bad_version})
+        )
+        assert res["success"] is False, bad_version
+        assert res["result"] is None
+        assert "Invalid version" in res["error"]
+    # State uncorrupted: version kept, service untouched by failed deploys.
+    assert executor.service.version == "1.0.0"
+    assert executor.service.get_status() == "unhealthy"

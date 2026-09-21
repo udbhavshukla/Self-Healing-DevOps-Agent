@@ -90,13 +90,24 @@ class MockService:
         the version string.
 
         Args:
-            version: Optional new version string.
+            version: Optional new version string. Only a non-empty
+                string is accepted; None keeps the current version.
 
         Returns:
             The active version after deploy.
+
+        Raises:
+            ValueError: If version is neither None nor a non-empty
+                string. The service state is left unchanged.
         """
-        if version:
+        if version is None:
+            pass
+        elif isinstance(version, str) and version:
             self._version = version
+        else:
+            raise ValueError(
+                f"Invalid version: {version!r} (must be a non-empty string)"
+            )
         self._status = self.HEALTHY
         logger.info("Deployed version %s", self._version)
         return self._version
