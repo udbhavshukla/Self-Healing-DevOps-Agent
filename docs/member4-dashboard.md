@@ -8,7 +8,8 @@ React dashboard (frontend/src)
       → Member2ExecutorAdapter (adapter.py): ActionRequest dataclass → dict,
         restart_service → restart, dict → ExecutionResult (Member 1 names kept)
       → Member 2 Executor + MockService (untouched)
-      → StubVerifier (stub_verifier.py, TEMPORARY until Member 3)
+      → Member 3 Verifier (`backend/verifier/verifier.py`: evidence-based
+        Level 1 rule `http_200_and_healthy`; see `docs/verifier.md`)
       → Member 1 WorkflowOrchestrator (untouched)
       → in-memory store (store.py), scenario presets (scenarios.py)
 ```
@@ -49,16 +50,22 @@ npm run build --prefix frontend        # type-check (tsc) + production build
 - `persistent-failure`: unhealthy + deterministic failed recovery →
   retries exhausted → `ESCALATED`, `final_result: null`, `error` set.
 
-## 6. How Member 3 replaces the stub
+## 6. Verifier (Member 3, integrated)
 
-Implement the `Verifier` Protocol from `backend/workflow/interfaces.py`
-(`verify(result: ExecutionResult) -> VerificationResult`), following the
-rules in `INTEGRATION.md` §3. Then in `backend/api/app.py`, swap the
-`StubVerifier()` construction for the real verifier — no route, store,
-adapter, or frontend change is needed. Delete `stub_verifier.py` once
-replaced. Until then, the stub passes `health_check` on HTTP 200/healthy
-and `restart_service` on `recovered=True`, failing everything else
-(including any `success=False` execution).
+`backend/api/app.py` constructs Member 3's `Verifier`
+(`backend/verifier/verifier.py`) directly — no adapter is needed because
+it natively accepts Member 1's `ExecutionResult` dataclass and returns
+Member 1's `VerificationResult` (same fields the dashboard already
+renders: `task_id`, `step_id`, `passed`, `reason`, `evidence`).
+
+Rule (`http_200_and_healthy`, see `docs/verifier.md`): pass if and only
+if evidence shows HTTP 200 **and** `health_status "healthy"`. The
+executor's `success` flag alone never passes — `success=True` with
+HTTP 503/unhealthy verifies as FAILED. The verifier never retries,
+recovers, or escalates; it only answers whether an execution satisfied
+the rule. The former temporary `StubVerifier`
+(`backend/api/stub_verifier.py`) was removed once the real verifier
+landed; no route, store, adapter, or frontend change was required.
 
 ## 7. Complete demo
 

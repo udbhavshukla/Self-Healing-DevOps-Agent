@@ -16,8 +16,8 @@ from pydantic import BaseModel, Field
 from backend.api.adapter import Member2ExecutorAdapter
 from backend.api.scenarios import SCENARIOS, build_service
 from backend.api.store import get_workflow, save_workflow
-from backend.api.stub_verifier import StubVerifier
 from backend.environment.executor import Executor as Member2Executor
+from backend.verifier.verifier import Verifier
 from backend.workflow.models import TaskRequest, WorkflowStatus
 from backend.workflow.orchestrator import WorkflowOrchestrator
 from backend.workflow.planner import WorkflowPlanner
@@ -63,7 +63,7 @@ def run_workflow(
     orchestrator = WorkflowOrchestrator(
         WorkflowPlanner(),
         Member2ExecutorAdapter(Member2Executor(service)),
-        StubVerifier(),
+        Verifier(),
         RecoveryPolicy(),
     )
     task = TaskRequest(
