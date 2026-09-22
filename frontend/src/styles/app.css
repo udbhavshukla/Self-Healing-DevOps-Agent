@@ -81,12 +81,26 @@ body {
 
 .facts dd {
   margin: 0;
-  overflow-wrap: anywhere;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .mono {
   font-family: ui-monospace, monospace;
   font-size: 13px;
+}
+
+/* Long technical ids: wrap at sensible boundaries, never char-by-char. */
+.task-id {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Short labels/values that must stay on one line. */
+.nowrap {
+  white-space: nowrap;
 }
 
 .json {
@@ -95,7 +109,15 @@ body {
   padding: 8px;
   font-size: 12px;
   overflow-x: auto;
-  margin: 0;
+  white-space: pre;
+  margin: 8px 0 0;
+  max-width: 100%;
+}
+
+.json-details summary {
+  cursor: pointer;
+  color: #666;
+  font-size: 13px;
 }
 
 .muted {
@@ -165,14 +187,122 @@ body {
 
 .timeline {
   margin: 0;
-  padding-left: 8px;
+  padding: 4px 0 4px 4px;
   list-style: none;
   display: grid;
-  gap: 6px;
+  gap: 0;
   max-height: 420px;
   overflow-y: auto;
+  border-left: 2px solid #d5dae0;
+  margin-left: 6px;
+  padding-left: 18px;
 }
 
-.timeline-item code {
-  font-size: 12px;
+.timeline-item {
+  position: relative;
+  padding: 6px 0;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -24px;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1565c0;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #d5dae0;
+}
+
+.timeline-label {
+  font-weight: 600;
+  font-size: 13px;
+  display: block;
+}
+
+.timeline-tech {
+  display: block;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: #555;
+  overflow-wrap: break-word;
+}
+
+.timeline-tech.muted-id {
+  color: #999;
+}
+
+/* Compact per-attempt recovery cards. */
+.attempt-card {
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #fafafa;
+}
+
+.attempt-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.attempt-rows {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+/* Final result headline banners. */
+.result-banner {
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.result-banner.verified {
+  background: #e6f4ea;
+  border: 1px solid #0a7a2f;
+}
+
+.result-banner.verified strong {
+  color: #0a7a2f;
+}
+
+.result-banner.terminal {
+  background: #fdecea;
+  border: 1px solid #b00020;
+}
+
+.result-banner.terminal strong {
+  color: #b00020;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .sys-status {
+    padding-top: 0;
+  }
+
+  .facts > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }

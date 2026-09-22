@@ -33,14 +33,17 @@ export default function VerificationPanel({
         </div>
         <div>
           <dt>Step</dt>
-          <dd className="mono">{verification.step_id}</dd>
+          <dd className="task-id">{verification.step_id}</dd>
         </div>
         <div>
           <dt>Evidence</dt>
           <dd>
-            <pre className="json">
-              {JSON.stringify(verification.evidence, null, 2)}
-            </pre>
+            <details className="json-details" open>
+              <summary>Show evidence</summary>
+              <pre className="json">
+                {JSON.stringify(verification.evidence, null, 2)}
+              </pre>
+            </details>
           </dd>
         </div>
       </dl>

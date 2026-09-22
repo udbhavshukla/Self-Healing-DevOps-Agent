@@ -1,3 +1,4 @@
+import { buildRecoveryAttempts } from "../labels";
 import {
   recoveryApprovals,
   recoveryCycles,
@@ -21,51 +22,48 @@ export default function RecoveryHistory({
       </section>
     );
   }
+  const attempts = buildRecoveryAttempts(approvals, executions);
   return (
     <section className="panel">
       <h2>Recovery history</h2>
-      <dl className="facts">
-        <div>
-          <dt>Recovery attempts</dt>
-          <dd>{approvals.length}</dd>
-        </div>
-        {approvals.map((approval, i) => (
-          <div key={i}>
-            <dt>Approved action</dt>
-            <dd className="mono">
-              {String(approval.action)} (step {String(approval.step_id)})
-            </dd>
+      {attempts.map((attempt) => (
+        <div key={attempt.index} className="attempt-card">
+          <div className="attempt-title">
+            Recovery Attempt {attempt.index}
           </div>
-        ))}
-        {executions.map((exec, i) => (
-          <div key={`exec-${i}`}>
-            <dt>Recovery result</dt>
-            <dd className="mono">
-              recovered={String(exec.result["recovered"] ?? "?")},{" "}
-              health={String(exec.result["health_status"] ?? "?")}
-            </dd>
-          </div>
-        ))}
-        {cycles.length > 0 && (
-          <div>
-            <dt>Failed cycles</dt>
-            <dd>
-              {cycles.length} (last:{" "}
-              {String(
-                cycles[cycles.length - 1]["recovery_attempts"] ?? "?"
-              )}{" "}
-              / {String(cycles[cycles.length - 1]["max_attempts"] ?? "?")})
-            </dd>
-          </div>
-        )}
-        {status.final_result?.recovered_via !== undefined &&
-          status.final_result?.recovered_via !== null && (
+          <div className="attempt-rows">
             <div>
-              <dt>Recovered via</dt>
-              <dd className="mono">{status.final_result.recovered_via}</dd>
+              <span className="muted">Action: </span>
+              <span className="nowrap">{attempt.action}</span>
             </div>
-          )}
-      </dl>
+            <div>
+              <span className="muted">Result: </span>
+              <span
+                className={attempt.result === "Recovered" ? "pass" : "fail"}
+              >
+                {attempt.result}
+              </span>
+            </div>
+            <div>
+              <span className="muted">Health: </span>
+              <span>{attempt.health}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+      {cycles.length > 0 && (
+        <p className="muted">
+          Failed cycles: {cycles.length} (limit{" "}
+          {String(cycles[cycles.length - 1]["max_attempts"] ?? "?")})
+        </p>
+      )}
+      {status.final_result?.recovered_via !== undefined &&
+        status.final_result?.recovered_via !== null && (
+          <p>
+            <span className="muted">Recovered via: </span>
+            <span className="task-id">{status.final_result.recovered_via}</span>
+          </p>
+        )}
     </section>
   );
 }

@@ -8,7 +8,7 @@ export default function StepPanel({ status }: { status: WorkflowStatus }) {
       <dl className="facts">
         <div>
           <dt>Task ID</dt>
-          <dd className="mono">{status.task_id}</dd>
+          <dd className="task-id">{status.task_id}</dd>
         </div>
         <div>
           <dt>Current state</dt>
@@ -18,7 +18,7 @@ export default function StepPanel({ status }: { status: WorkflowStatus }) {
         </div>
         <div>
           <dt>Current step</dt>
-          <dd className="mono">{status.current_step ?? "—"}</dd>
+          <dd className="task-id">{status.current_step ?? "—"}</dd>
         </div>
         <div>
           <dt>Attempt count</dt>
