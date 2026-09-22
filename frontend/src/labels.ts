@@ -42,6 +42,16 @@ const EVENT_LABELS: Record<string, string> = {
   unapproved_action: "Unapproved Action",
   executor_identity_mismatch: "Identity Mismatch",
   inconsistent_verification: "Inconsistent Verification",
+  incident_received: "Incident Received",
+  ai_analysis: "AI Analysis",
+  ai_unavailable: "AI Unavailable",
+  ai_action_rejected: "AI Action Rejected",
+  offline_policy: "Offline Policy",
+  connectivity_changed: "Connectivity Changed",
+  sync_started: "Sync Started",
+  sync_completed: "Sync Completed",
+  sync_failed: "Sync Failed",
+  final_result: "Final Result",
 };
 
 export function humanize(value: string): string {

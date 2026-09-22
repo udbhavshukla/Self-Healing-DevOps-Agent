@@ -3,7 +3,8 @@
 Works with MockService. Deterministic mapping only:
 
 - healthy   -> {"http_status": 200, "health_status": "healthy"}
-- unhealthy -> {"http_status": 503, "health_status": "unhealthy"}
+- unhealthy -> {"http_status": <service fail_http_status, default 503>,
+                "health_status": "unhealthy"}
 
 No verification, retry, or escalation logic lives here.
 Tool execution success vs. application health is decided by
@@ -30,7 +31,11 @@ def check_health(service: MockService) -> dict:
     if status == MockService.HEALTHY:
         result = {"http_status": 200, "health_status": "healthy"}
     else:
-        result = {"http_status": 503, "health_status": "unhealthy"}
+        # The service carries its own simulated failure code so an
+        # incident's status (e.g. HTTP 500) is preserved, not forced
+        # to 503. getattr keeps duck-typed fakes working (default 503).
+        fail_status = getattr(service, "fail_http_status", 503)
+        result = {"http_status": fail_status, "health_status": "unhealthy"}
     logger.info("Health check: %s", result["health_status"])
     return result
 

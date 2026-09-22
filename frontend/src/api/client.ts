@@ -1,5 +1,10 @@
 /** All HTTP communication lives here. Components never call fetch directly. */
-import type { StartWorkflowRequest, WorkflowStatus } from "../types";
+import type {
+  OfflineSummary,
+  StartWorkflowRequest,
+  SyncResult,
+  WorkflowStatus,
+} from "../types";
 
 async function handle<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -34,4 +39,25 @@ export async function getWorkflow(taskId: string): Promise<WorkflowStatus> {
 export async function checkHealth(): Promise<{ status: string }> {
   const response = await fetch("/api/health");
   return handle<{ status: string }>(response);
+}
+
+export async function getOfflineStatus(): Promise<OfflineSummary> {
+  const response = await fetch("/api/offline/status");
+  return handle<OfflineSummary>(response);
+}
+
+export async function triggerSync(): Promise<SyncResult> {
+  const response = await fetch("/api/offline/sync", { method: "POST" });
+  return handle<SyncResult>(response);
+}
+
+export async function setConnectivity(
+  online: boolean | null
+): Promise<OfflineSummary> {
+  const response = await fetch("/api/offline/connectivity", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ online }),
+  });
+  return handle<OfflineSummary>(response);
 }

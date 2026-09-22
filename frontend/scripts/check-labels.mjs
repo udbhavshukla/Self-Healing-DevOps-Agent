@@ -44,6 +44,14 @@ assert.equal(
   labels.eventLabel("workflow_verified_after_recovery"),
   "Verified After Recovery"
 );
+assert.equal(labels.eventLabel("incident_received"), "Incident Received");
+assert.equal(labels.eventLabel("ai_analysis"), "AI Analysis");
+assert.equal(labels.eventLabel("ai_unavailable"), "AI Unavailable");
+assert.equal(labels.eventLabel("ai_action_rejected"), "AI Action Rejected");
+assert.equal(labels.eventLabel("offline_policy"), "Offline Policy");
+assert.equal(labels.eventLabel("connectivity_changed"), "Connectivity Changed");
+assert.equal(labels.eventLabel("sync_completed"), "Sync Completed");
+assert.equal(labels.eventLabel("final_result"), "Final Result");
 
 // VERIFIED summary rendering.
 const verified = labels.finalSummary({

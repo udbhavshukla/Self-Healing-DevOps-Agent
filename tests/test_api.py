@@ -95,6 +95,12 @@ def test_response_shape():
         "history",
         "final_result",
         "error",
+        # Level 2 additive fields (null when no incident is provided).
+        "ai_analysis",
+        "evidence",
+        # Offline-resilience additive fields.
+        "connectivity",
+        "offline",
     }
     assert data["current_step"] is not None
     assert data["attempt"] >= 1

@@ -13,20 +13,42 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _validate_http_status(value: int) -> int:
+    """Validate a simulated HTTP status code.
+
+    Raises:
+        ValueError: If not an int in 100-599 (bools rejected).
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(
+            f"Invalid HTTP status: {value!r} (must be an int 100-599)"
+        )
+    if not 100 <= value <= 599:
+        raise ValueError(
+            f"Invalid HTTP status: {value!r} (must be an int 100-599)"
+        )
+    return value
+
+
 class MockService:
     """In-memory mock application/service."""
 
     HEALTHY = "healthy"
     UNHEALTHY = "unhealthy"
 
-    def __init__(self, version: str = "1.0.0") -> None:
+    def __init__(self, version: str = "1.0.0", fail_http_status: int = 503) -> None:
         """Create a healthy service.
 
         Args:
             version: Simple version string for the mock app.
+            fail_http_status: HTTP status reported by health checks
+                while the service is unhealthy (default 503). Lets a
+                simulated incident carry its own status code (e.g. 500)
+                instead of always collapsing to 503.
         """
         self._status: str = self.HEALTHY
         self._version: str = version
+        self.fail_http_status: int = _validate_http_status(fail_http_status)
         # When True, restart() deterministically does NOT recover
         # the service (used to simulate failed recovery in tests).
         self.fail_recovery_mode: bool = False
@@ -53,11 +75,13 @@ class MockService:
         """Return a snapshot of service state.
 
         Returns:
-            Dict with health_status, version, and fail_recovery_mode.
+            Dict with health_status, version, fail_http_status,
+            and fail_recovery_mode.
         """
         return {
             "health_status": self._status,
             "version": self._version,
+            "fail_http_status": self.fail_http_status,
             "fail_recovery_mode": self.fail_recovery_mode,
         }
 
