@@ -1,6 +1,19 @@
 import { actionLabel, eventLabel } from "../labels";
 import type { HistoryEvent } from "../types";
 
+const ICONS: Array<[RegExp, string]> = [
+  [/incident_received/, "◉"],
+  [/ai_analysis|ai_unavailable|ai_action_rejected|offline_policy/, "◆"],
+  [/plan_created/, "▤"],
+  [/execut|health_check/, "♥"],
+  [/verif/, "✓"],
+  [/recover|restart/, "↻"],
+  [/sync/, "⇅"],
+  [/escalat/, "▲"],
+  [/fail|error/, "⚠"],
+  [/transition/, "→"],
+];
+
 /** Friendly primary label; original technical names kept as muted detail. */
 function detail(event: HistoryEvent): string | null {
   const parts: string[] = [];
@@ -16,6 +29,13 @@ function detail(event: HistoryEvent): string | null {
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
+function iconFor(eventName: string): string {
+  for (const [pattern, icon] of ICONS) {
+    if (pattern.test(eventName)) return icon;
+  }
+  return "●";
+}
+
 export default function WorkflowTimeline({
   history,
 }: {
@@ -23,30 +43,35 @@ export default function WorkflowTimeline({
 }) {
   if (history.length === 0) {
     return (
-      <section className="panel">
+      <section id="activity" className="panel">
         <h2>Timeline</h2>
         <p className="muted">No history recorded.</p>
       </section>
     );
   }
   return (
-    <section className="panel wide">
-      <h2>Workflow timeline ({history.length} events)</h2>
+    <section id="activity" className="panel wide">
+      <h2>Live execution timeline ({history.length} events)</h2>
       <ol className="timeline">
         {history.map((event, i) => {
           const extra = detail(event);
           return (
             <li key={i} className="timeline-item">
-              <span className="timeline-label">
-                {eventLabel(event.event)}
-                {event.event === "executing" &&
-                  event["action"] !== undefined &&
-                  ` — ${actionLabel(String(event["action"]))}`}
+              <span className="timeline-icon" aria-hidden="true">
+                {iconFor(event.event)}
               </span>
-              {extra !== null && (
-                <span className="timeline-tech">{extra}</span>
-              )}
-              <span className="timeline-tech muted-id">{event.event}</span>
+              <span className="timeline-body">
+                <span className="timeline-label">
+                  {eventLabel(event.event)}
+                  {event.event === "executing" &&
+                    event["action"] !== undefined &&
+                    ` — ${actionLabel(String(event["action"]))}`}
+                </span>
+                {extra !== null && (
+                  <span className="timeline-tech">{extra}</span>
+                )}
+                <span className="timeline-tech muted-id">{event.event}</span>
+              </span>
             </li>
           );
         })}

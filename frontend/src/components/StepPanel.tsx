@@ -3,7 +3,7 @@ import StateBadge from "./StateBadge";
 
 export default function StepPanel({ status }: { status: WorkflowStatus }) {
   return (
-    <section className="panel">
+    <section id="status" className="panel">
       <h2>Current status</h2>
       <dl className="facts">
         <div>

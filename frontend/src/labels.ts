@@ -73,6 +73,36 @@ export function eventLabel(event: string): string {
   return EVENT_LABELS[event] ?? humanize(event);
 }
 
+/** Semantic tone for status values (drives badge styling). */
+export type Tone = "ok" | "warn" | "bad" | "info" | "neutral";
+
+export function stateTone(state: string): Tone {
+  switch (state) {
+    case "VERIFIED":
+    case "Healthy":
+    case "PASSED":
+    case "ONLINE":
+    case "OPERATIONAL":
+    case "SYNCED":
+    case "Recovered":
+      return "ok";
+    case "RECOVERING":
+    case "VERIFYING":
+    case "EXECUTING":
+    case "PLANNED":
+    case "SYNCING":
+    case "PENDING":
+    case "OFFLINE":
+      return "warn";
+    case "FAILED":
+    case "ESCALATED":
+    case "Unhealthy":
+      return "bad";
+    default:
+      return "neutral";
+  }
+}
+
 /** healthy -> "Healthy", unhealthy -> "Unhealthy". */
 export function healthDisplay(value: unknown): string {
   if (value === "healthy") return "Healthy";
