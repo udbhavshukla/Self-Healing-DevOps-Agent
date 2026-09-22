@@ -15,7 +15,7 @@ export default function OfflinePanel({
 }: Props) {
   if (offline === null) {
     return (
-      <section className="panel">
+      <section id="offline" className="panel">
         <h2>Offline resilience</h2>
         <p className="muted">Connectivity state loading…</p>
       </section>
@@ -33,7 +33,7 @@ export default function OfflinePanel({
         ? `${last.synced} synced, ${last.failed} failed (kept for retry)`
         : `${last.synced}/${last.synced + offline.pending} events synced`;
   return (
-    <section className="panel">
+    <section id="offline" className="panel">
       <h2>Offline resilience</h2>
       <dl className="facts">
         <div>

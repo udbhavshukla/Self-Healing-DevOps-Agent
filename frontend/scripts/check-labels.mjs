@@ -133,4 +133,15 @@ assert.deepEqual(attempts[1], {
   health: "Healthy",
 });
 
+// Semantic tones for status badges.
+assert.equal(labels.stateTone("VERIFIED"), "ok");
+assert.equal(labels.stateTone("PASSED"), "ok");
+assert.equal(labels.stateTone("ONLINE"), "ok");
+assert.equal(labels.stateTone("OFFLINE"), "warn");
+assert.equal(labels.stateTone("RECOVERING"), "warn");
+assert.equal(labels.stateTone("FAILED"), "bad");
+assert.equal(labels.stateTone("ESCALATED"), "bad");
+assert.equal(labels.stateTone("Unhealthy"), "bad");
+assert.equal(labels.stateTone("something-unknown"), "neutral");
+
 console.log("labels checks passed");

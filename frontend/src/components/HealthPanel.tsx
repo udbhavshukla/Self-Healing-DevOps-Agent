@@ -6,7 +6,7 @@ export default function HealthPanel({ status }: { status: WorkflowStatus }) {
   const exec = latestExecution(status);
   if (!exec) {
     return (
-      <section className="panel">
+      <section id="health" className="panel">
         <h2>Health</h2>
         <p className="muted">No executions recorded yet.</p>
       </section>
@@ -16,7 +16,7 @@ export default function HealthPanel({ status }: { status: WorkflowStatus }) {
   const httpStatus = result["http_status"];
   const healthStatus = result["health_status"];
   return (
-    <section className="panel">
+    <section id="health" className="panel">
       <h2>Health (latest execution)</h2>
       <dl className="facts">
         <div>

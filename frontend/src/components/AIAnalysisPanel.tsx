@@ -6,25 +6,33 @@ import type { AIAnalysis } from "../types";
  * the AI recommends; policy + executor + verifier decide and act.
  */
 export default function AIAnalysisPanel({ ai }: { ai: AIAnalysis }) {
+  const sourceLabel =
+    ai.source === "offline_policy" ? "Local Offline Policy" : "Gemini";
   if (!ai.available && ai.rejected_action === null) {
     return (
-      <section className="panel">
-        <h2>AI incident analysis</h2>
+      <section id="ai-analysis" className="panel ai-panel">
+        <div className="card-head">
+          <h2>AI Incident Analysis</h2>
+          <span className="status-badge tone-neutral">NO SIGNAL</span>
+        </div>
         <p>
           <strong>AI analysis unavailable.</strong>
         </p>
         {ai.error !== null && <p className="error-text">{ai.error}</p>}
         <p className="muted">
-          Continuing with the deterministic Level 1 recovery policy. No AI
-          response was fabricated.
+          Continuing with the deterministic recovery policy. No AI response
+          was fabricated.
         </p>
       </section>
     );
   }
   if (ai.rejected_action !== null) {
     return (
-      <section className="panel">
-        <h2>AI incident analysis</h2>
+      <section id="ai-analysis" className="panel ai-panel">
+        <div className="card-head">
+          <h2>AI Incident Analysis</h2>
+          <span className="status-badge tone-bad">ADVISORY ONLY</span>
+        </div>
         <p>
           <strong>AI recommendation rejected by allowlist validation.</strong>
         </p>
@@ -48,8 +56,16 @@ export default function AIAnalysisPanel({ ai }: { ai: AIAnalysis }) {
     );
   }
   return (
-    <section className="panel">
-      <h2>AI incident analysis</h2>
+    <section id="ai-analysis" className="panel ai-panel">
+      <div className="card-head">
+        <h2>AI Incident Analysis</h2>
+        <span className="status-badge tone-info">ADVISORY ONLY</span>
+      </div>
+      <ol className="mini-flow" aria-label="How the recommendation is handled">
+        <li>AI recommends</li>
+        <li>Safety validation</li>
+        <li>Controlled execution</li>
+      </ol>
       <dl className="facts">
         <div>
           <dt>Diagnosis</dt>
@@ -81,9 +97,10 @@ export default function AIAnalysisPanel({ ai }: { ai: AIAnalysis }) {
         <div>
           <dt>Source</dt>
           <dd className="muted">
-            {ai.source === "offline_policy"
-              ? "Local Offline Policy (internet unavailable — not Gemini)"
-              : `Gemini${ai.model ? ` (${ai.model})` : ""}`}
+            {sourceLabel}
+            {ai.source !== "offline_policy" && ai.model
+              ? ` (${ai.model})`
+              : ""}
           </dd>
         </div>
         {ai.source === "offline_policy" && (
@@ -98,6 +115,9 @@ export default function AIAnalysisPanel({ ai }: { ai: AIAnalysis }) {
           </div>
         )}
       </dl>
+      <p className="muted">
+        AI recommendations are validated before execution.
+      </p>
     </section>
   );
 }

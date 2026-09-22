@@ -16,7 +16,7 @@ export default function RecoveryHistory({
   const cycles = recoveryCycles(status);
   if (approvals.length === 0 && cycles.length === 0) {
     return (
-      <section className="panel">
+      <section id="recovery" className="panel">
         <h2>Recovery</h2>
         <p className="muted">No recovery actions — service stayed healthy.</p>
       </section>
@@ -24,7 +24,7 @@ export default function RecoveryHistory({
   }
   const attempts = buildRecoveryAttempts(approvals, executions);
   return (
-    <section className="panel">
+    <section id="recovery" className="panel">
       <h2>Recovery history</h2>
       {attempts.map((attempt) => (
         <div key={attempt.index} className="attempt-card">

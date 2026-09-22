@@ -5,7 +5,7 @@ export default function FinalResult({ status }: { status: WorkflowStatus }) {
   const summary = finalSummary(status);
   if (summary.kind === "verified") {
     return (
-      <section className="panel">
+      <section id="result" className="panel">
         <h2>Final result</h2>
         <div className="result-banner verified">
           <strong>Status: {summary.title}</strong>
@@ -30,7 +30,7 @@ export default function FinalResult({ status }: { status: WorkflowStatus }) {
   }
   if (summary.kind === "terminal") {
     return (
-      <section className="panel">
+      <section id="result" className="panel">
         <h2>Final result</h2>
         <div className="result-banner terminal">
           <strong>Status: {summary.title}</strong>
@@ -43,7 +43,7 @@ export default function FinalResult({ status }: { status: WorkflowStatus }) {
     );
   }
   return (
-    <section className="panel">
+    <section id="result" className="panel">
       <h2>Final result</h2>
       <p className="muted">{summary.subtitle}</p>
     </section>

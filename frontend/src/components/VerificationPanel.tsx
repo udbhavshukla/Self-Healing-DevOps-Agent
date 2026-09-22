@@ -9,14 +9,14 @@ export default function VerificationPanel({
   const verification = latestVerification(status);
   if (!verification) {
     return (
-      <section className="panel">
+      <section id="verification" className="panel">
         <h2>Verification</h2>
         <p className="muted">No verification recorded yet (Member 3 pending).</p>
       </section>
     );
   }
   return (
-    <section className="panel">
+    <section id="verification" className="panel">
       <h2>Verification (latest)</h2>
       <dl className="facts">
         <div>
